@@ -16,27 +16,29 @@ config.hide_tab_bar_if_only_one_tab = true
 
 config.set_environment_variables = {}
 -- uncomment if I want to use clink only
--- if wezterm.target_triple == "x86_64-pc-windows-msvc" then
-if false then
-	-- Use OSC 7 as per the above example
-	config.set_environment_variables["prompt"] = "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m "
-	-- use a more ls-like output format for dir
-	config.set_environment_variables["DIRCMD"] = "/d"
-	-- And inject clink into the command prompt
+if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+	if false then
+		-- Use OSC 7 as per the above example
+		config.set_environment_variables["prompt"] =
+			"$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m "
+		-- use a more ls-like output format for dir
+		-- And inject clink into the command prompt
+		config.set_environment_variables["DIRCMD"] = "/d"
+	end
 	config.default_prog = { "cmd.exe", "/s", "/k", "c:/clink/clink_x64.exe", "inject", "-q" }
+
+	-- bring color to default cmd
+	config.set_environment_variables = {
+		prompt = "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m ",
+	}
+
+	local initBat = os.getenv("cmder_root") .. "\\vendor\\init.bat"
+	-- TODO: might need to remove
+	config.set_environment_variables["prompt"] = "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m "
+	-- TODO: might need to remove
+	config.set_environment_variables["DIRCMD"] = "/d"
+	config.default_prog = { "cmd.exe", "/s", "/k", initBat }
 end
-
--- bring color to default cmd
-config.set_environment_variables = {
-	prompt = "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m ",
-}
-
-local initBat = os.getenv("cmder_root") .. "\\vendor\\init.bat"
--- TODO: might need to remove
-config.set_environment_variables["prompt"] = "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m "
--- TODO: might need to remove
-config.set_environment_variables["DIRCMD"] = "/d"
-config.default_prog = { "cmd.exe", "/s", "/k", initBat }
 
 config.keys = {
 	-- CTRL-SHIFT-l activates the debug overlay
@@ -104,7 +106,9 @@ local font = wezterm.font({
 	weight = "Medium",
 })
 config.font = font
-config.font_size = 9
+config.font_size = (wezterm.target_triple == "aarch64-apple-darwin" or wezterm.target_triple == "x86_64-apple-darwin")
+		and 12
+	or 9
 
 --ref: https://wezfurlong.org/wezterm/config/lua/config/freetype_pcf_long_family_names.html#why-doesnt-wezterm-use-the-distro-freetype-or-match-its-configuration
 config.freetype_load_target = "Normal" ---@type 'Normal'|'Light'|'Mono'|'HorizontalLcd'
