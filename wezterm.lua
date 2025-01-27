@@ -1,5 +1,5 @@
 -- Pull in the wezterm API
----@type wezterm
+--- @type Wezterm
 local wezterm = require("wezterm")
 
 -- This will hold the configuration.
