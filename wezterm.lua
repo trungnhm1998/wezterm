@@ -40,6 +40,11 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
 	config.default_prog = { "cmd.exe", "/s", "/k", initBat }
 end
 
+-- unbind alt enter
+config.keys = {
+	{ key = "Enter", mods = "ALT", action = wezterm.action.DisableDefaultAssignment },
+}
+
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
 	config.leader = {
 		key = "\\",
