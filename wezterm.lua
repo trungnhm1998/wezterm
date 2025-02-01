@@ -1,4 +1,3 @@
--- Pull in the wezterm API
 --- @type Wezterm
 local wezterm = require("wezterm")
 
@@ -17,6 +16,8 @@ config.hide_tab_bar_if_only_one_tab = true
 config.set_environment_variables = {}
 -- uncomment if I want to use clink only
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+    -- because my tmux on macos have bottom tab bar
+    config.tab_bar_at_bottom = true
     if false then
         -- Use OSC 7 as per the above example
         config.set_environment_variables["prompt"] =
