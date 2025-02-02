@@ -16,9 +16,17 @@ config.hide_tab_bar_if_only_one_tab = true
 config.set_environment_variables = {}
 -- uncomment if I want to use clink only
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+    local ShellTypes = {
+        NONE = 0,
+        CMD = 1,
+        CMDER = 2,
+        PowerShell = 3,
+    }
+
+    local shellType = ShellTypes.PowerShell
     -- because my tmux on macos have bottom tab bar
     config.tab_bar_at_bottom = true
-    if false then
+    if shellType == ShellTypes.CMD then
         -- Use OSC 7 as per the above example
         config.set_environment_variables["prompt"] =
         "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m "
@@ -26,19 +34,26 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
         -- And inject clink into the command prompt
         config.set_environment_variables["DIRCMD"] = "/d"
     end
-    config.default_prog = { "cmd.exe", "/s", "/k", "c:/clink/clink_x64.exe", "inject", "-q" }
 
-    -- bring color to default cmd
-    config.set_environment_variables = {
-        prompt = "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m ",
-    }
+    if shellType == ShellTypes.CMDER then
+        config.default_prog = { "cmd.exe", "/s", "/k", "c:/clink/clink_x64.exe", "inject", "-q" }
 
-    local initBat = os.getenv("cmder_root") .. "\\vendor\\init.bat"
-    -- TODO: might need to remove
-    config.set_environment_variables["prompt"] = "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m "
-    -- TODO: might need to remove
-    config.set_environment_variables["DIRCMD"] = "/d"
-    config.default_prog = { "cmd.exe", "/s", "/k", initBat }
+        -- bring color to default cmd
+        config.set_environment_variables = {
+            prompt = "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m ",
+        }
+
+        local initBat = os.getenv("cmder_root") .. "\\vendor\\init.bat"
+        -- TODO: might need to remove
+        config.set_environment_variables["prompt"] = "$E]7;file://localhost/$P$E\\$E[32m$T$E[0m $E[35m$P$E[36m$_$G$E[0m "
+        -- TODO: might need to remove
+        config.set_environment_variables["DIRCMD"] = "/d"
+        config.default_prog = { "cmd.exe", "/s", "/k", initBat }
+    end
+
+    if shellType == ShellTypes.PowerShell then
+        config.default_prog = { "C:\\Program Files\\PowerShell\\7\\pwsh.exe", '-NoLogo' }
+    end
 end
 
 -- unbind alt enter
